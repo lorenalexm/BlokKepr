@@ -3,6 +3,10 @@
 using UnityEngine;
 using System.Collections;
 
+#if UNITY_ANDROID && !UNITY_EDITOR
+using tv.ouya.console.api;
+#endif
+
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerController : MonoBehaviour {
 
@@ -30,6 +34,22 @@ public class PlayerController : MonoBehaviour {
 
 
 	//------------------------------------------------
+	#region Properties
+
+	public int PlayerNumber {
+		get {
+			return this.playerNumber;
+		}
+
+		set {
+			this.playerNumber = value;
+		}
+	}
+
+	#endregion
+
+
+	//------------------------------------------------
 	#region Start method
 
 	private void Start() {
@@ -47,9 +67,14 @@ public class PlayerController : MonoBehaviour {
 	#region Update method
 
 	private void Update() {
-		Vector2 orgin = Vector2.zero;
-		float distance = 0.0f;
+#if UNITY_ANDROID && !UNITY_EDITOR
+		this.inputAxis = OuyaSDK.OuyaInput.GetAxis(this.playerNumber, OuyaController.AXIS_LS_X);
+#else
 		this.inputAxis = Input.GetAxis("Horizontal");
+#endif
+		Vector2 orgin = Vector2.zero;
+		bool jumpButton = false;
+		float distance = 0.0f;
 		float direction = Mathf.Sign(this.inputAxis);
 
 		// Grounded collision
@@ -73,7 +98,12 @@ public class PlayerController : MonoBehaviour {
 			Debug.DrawRay(orgin, Vector2.right * direction, Color.red);
 		}
 
-		if(Input.GetButtonDown("Jump") == true && this.grounded == true) {
+#if UNITY_ANDROID && !UNITY_EDITOR
+		jumpButton = OuyaSDK.OuyaInput.GetButtonDown(this.playerNumber, OuyaController.BUTTON_O);
+#else
+		jumpButton = Input.GetButtonDown("Jump");
+#endif
+		if(jumpButton == true && this.grounded == true) {
 			this.jumpRequested = true;
 		}
 	}
