@@ -21,13 +21,18 @@ public class PlayerController : MonoBehaviour {
 	private float jumpForce = 500.0f;
 	[SerializeField]
 	private LayerMask worldMask;
+	[SerializeField]
+	private float respawnDelay = 2.0f;
 
 	private Rigidbody2D body = null;
 	private BoxCollider2D collider = null;
+	private Vector2 spawnPoint = Vector2.zero;
 	private float inputAxis = 0.0f;
 	private bool grounded = false;
 	private bool disallowHorizontalForce = true;
 	private bool jumpRequested = false;
+	private bool dead = false;
+	private float deathTime = 0.0f;
 	private int playerNumber = 0;
 
 	#endregion
@@ -58,6 +63,27 @@ public class PlayerController : MonoBehaviour {
 		if(this.body != null) {
 			this.body.freezeRotation = true;
 		}
+		this.spawnPoint = this.transform.position;
+	}
+
+	#endregion
+
+
+	//------------------------------------------------
+	#region OnEnable method
+
+	private void OnEnable() {
+		Messenger<GameObject>.AddListener("OnPlayerDeath", this.PlayerDeath);
+	}
+
+	#endregion
+
+
+	//------------------------------------------------
+	#region OnDisable method
+
+	private void OnDisable() {
+		Messenger<GameObject>.RemoveListener("OnPlayerDeath", this.PlayerDeath);
 	}
 
 	#endregion
@@ -106,6 +132,12 @@ public class PlayerController : MonoBehaviour {
 		if(jumpButton == true && this.grounded == true) {
 			this.jumpRequested = true;
 		}
+
+		if(dead == true && Time.time > (this.deathTime + respawnDelay)) {
+			this.dead = false;
+			this.body.velocity = Vector2.zero;
+			this.transform.position = this.spawnPoint;
+		}
 	}
 
 	#endregion
@@ -126,6 +158,19 @@ public class PlayerController : MonoBehaviour {
 		if(this.jumpRequested == true) {
 			this.body.AddForce(new Vector2(0.0f, this.jumpForce));
 			this.jumpRequested = false;
+		}
+	}
+
+	#endregion
+
+
+	//------------------------------------------------
+	#region PlayerDeath method
+
+	private void PlayerDeath(GameObject obj) {
+		if(this.gameObject.Equals(obj) == true) {
+			this.dead = true;
+			this.deathTime = Time.time;
 		}
 	}
 

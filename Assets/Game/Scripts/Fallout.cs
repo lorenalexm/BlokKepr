@@ -9,6 +9,10 @@ public class Fallout : MonoBehaviour {
 		if(col.gameObject.CompareTag("Blok") == true) {
 			SimplePool.Despawn(col.gameObject);
 		}
+
+		if(col.gameObject.CompareTag("Player") == true) {
+			Messenger<GameObject>.Broadcast("OnPlayerDeath", col.gameObject);
+		}
 	}
 
 	#endregion
