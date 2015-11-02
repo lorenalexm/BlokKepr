@@ -32,6 +32,7 @@ public class PlayerController : MonoBehaviour {
 	private bool disallowHorizontalForce = true;
 	private bool jumpRequested = false;
 	private bool dead = false;
+	private bool paused = false;
 	private float deathTime = 0.0f;
 	private int playerNumber = 0;
 
@@ -74,6 +75,7 @@ public class PlayerController : MonoBehaviour {
 
 	private void OnEnable() {
 		Messenger<GameObject>.AddListener("OnPlayerDeath", this.PlayerDeath);
+		Messenger.AddListener("OnPause", this.Pause);
 	}
 
 	#endregion
@@ -84,6 +86,7 @@ public class PlayerController : MonoBehaviour {
 
 	private void OnDisable() {
 		Messenger<GameObject>.RemoveListener("OnPlayerDeath", this.PlayerDeath);
+		Messenger.AddListener("OnPause", this.Pause);
 	}
 
 	#endregion
@@ -93,6 +96,10 @@ public class PlayerController : MonoBehaviour {
 	#region Update method
 
 	private void Update() {
+		if(this.paused == true) {
+			return;
+		}
+
 #if UNITY_ANDROID && !UNITY_EDITOR
 		this.inputAxis = OuyaSDK.OuyaInput.GetAxis(this.playerNumber, OuyaController.AXIS_LS_X);
 #else
@@ -100,6 +107,7 @@ public class PlayerController : MonoBehaviour {
 #endif
 		Vector2 orgin = Vector2.zero;
 		bool jumpButton = false;
+		bool groundedLastFrame = this.grounded;
 		float distance = 0.0f;
 		float direction = Mathf.Sign(this.inputAxis);
 
@@ -107,6 +115,10 @@ public class PlayerController : MonoBehaviour {
 		distance = (this.transform.localScale.y / 2) + 0.1f;
 		this.grounded = Physics2D.Raycast(this.transform.position, -this.transform.up, distance, this.worldMask);
 		Debug.DrawRay(this.transform.position, -this.transform.up, Color.red);
+
+		if(this.grounded == true && groundedLastFrame == false) {
+			SoundManager.PlaySFX("Land");
+		}
 
 		// Horizontal collision
 		distance = (this.transform.localScale.x / 2);
@@ -137,6 +149,11 @@ public class PlayerController : MonoBehaviour {
 			this.dead = false;
 			this.body.velocity = Vector2.zero;
 			this.transform.position = this.spawnPoint;
+			MeshRenderer renderer = this.GetComponent<MeshRenderer>();
+			if(renderer != null) {
+				renderer.enabled = true;
+			}
+
 		}
 	}
 
@@ -156,8 +173,30 @@ public class PlayerController : MonoBehaviour {
 		}
 
 		if(this.jumpRequested == true) {
+			SoundManager.PlaySFX("Jump");
 			this.body.AddForce(new Vector2(0.0f, this.jumpForce));
 			this.jumpRequested = false;
+		}
+	}
+
+	#endregion
+
+
+	//------------------------------------------------
+	#region Pause method
+
+	private void Pause() {
+		this.paused = !this.paused;
+
+		if(this.body != null) {
+			switch(this.paused) {
+				case true:
+					this.body.isKinematic = true;
+					break;
+				case false:
+					this.body.isKinematic = false;
+					break;
+			}
 		}
 	}
 
@@ -171,6 +210,10 @@ public class PlayerController : MonoBehaviour {
 		if(this.gameObject.Equals(obj) == true) {
 			this.dead = true;
 			this.deathTime = Time.time;
+			MeshRenderer renderer = this.GetComponent<MeshRenderer>();
+			if(renderer != null) {
+				renderer.enabled = false;
+			}
 		}
 	}
 

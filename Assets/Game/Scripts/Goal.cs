@@ -15,7 +15,7 @@ public class Goal : MonoBehaviour {
 	#region OnTriggerEnter2D method
 
 	private void OnTriggerEnter2D(Collider2D col) {
-		if(col.CompareTag("Blok") == true) {
+		if(col.gameObject.CompareTag("Blok") == true) {
 			SimplePool.Despawn(col.gameObject);
 			Messenger<int>.Broadcast("OnPlayerGoal", this.goalForPlayer);
 		}

@@ -29,7 +29,7 @@ public class AspectAdjust : MonoBehaviour {
 			OuyaSDK.setSafeArea(this.safeArea);
 			#endif
 
-			Application.LoadLevel("Testbed");
+			Application.LoadLevel("Menu");
 		}
 	}
 
@@ -48,7 +48,7 @@ public class AspectAdjust : MonoBehaviour {
 					this.safeArea = 0.0f;
 				}
 				OuyaSDK.setSafeArea(this.safeArea);
-				this.lastInput = Time.Time;
+				this.lastInput = Time.time;
 			}
 
 			if(OuyaSDK.OuyaInput.GetButton(0, OuyaController.BUTTON_DPAD_RIGHT) == true) {
@@ -57,7 +57,7 @@ public class AspectAdjust : MonoBehaviour {
 					this.safeArea = 1.0f;
 				}
 				OuyaSDK.setSafeArea(this.safeArea);
-				this.lastInput = Time.Time;
+				this.lastInput = Time.time;
 			}
 
 			if(OuyaSDK.OuyaInput.GetAxis(0, OuyaController.AXIS_LS_X) < 0.0f) {
@@ -66,7 +66,7 @@ public class AspectAdjust : MonoBehaviour {
 					this.safeArea = 0.0f;
 				}
 				OuyaSDK.setSafeArea(this.safeArea);
-				this.lastInput = Time.Time;
+				this.lastInput = Time.time;
 			}
 
 			if(OuyaSDK.OuyaInput.GetAxis(0, OuyaController.AXIS_LS_X) > 0.0f) {
@@ -75,7 +75,7 @@ public class AspectAdjust : MonoBehaviour {
 					this.safeArea = 1.0f;
 				}
 				OuyaSDK.setSafeArea(this.safeArea);
-				this.lastInput = Time.Time;
+				this.lastInput = Time.time;
 			}
 			#endif
 		}
@@ -84,7 +84,8 @@ public class AspectAdjust : MonoBehaviour {
 		if(OuyaSDK.OuyaInput.GetButton(0, OuyaController.BUTTON_O) == true) {
 			//PlayerPrefs.SetFloat("SafeArea", this.safeArea);
 			//PlayerPrefs.Save();
-			Application.LoadLevel("Testbed");
+			SoundManager.PlaySFX("Select");
+			Application.LoadLevel("Menu");
 		}
 		#endif
 	}
