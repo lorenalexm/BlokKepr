@@ -210,6 +210,7 @@ public class PlayerController : MonoBehaviour {
 		if(this.gameObject.Equals(obj) == true) {
 			this.dead = true;
 			this.deathTime = Time.time;
+			this.transform.position = new Vector3(0.0f, -100.0f, 0.0f);
 			MeshRenderer renderer = this.GetComponent<MeshRenderer>();
 			if(renderer != null) {
 				renderer.enabled = false;
