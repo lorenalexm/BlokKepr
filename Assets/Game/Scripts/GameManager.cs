@@ -98,7 +98,7 @@ public class GameManager : MonoBehaviour {
 			if(Input.GetButtonDown("Jump") == true) {
 				SoundManager.PlaySFX("Select");
 				Random.seed = (int)Time.time;
-				int levelToLoad = Random.Range(1, 3);
+				int levelToLoad = Random.Range(1, 4);
 				Application.LoadLevel(levelToLoad.ToString());
 			}
 			#endif

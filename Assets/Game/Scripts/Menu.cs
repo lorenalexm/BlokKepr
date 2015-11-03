@@ -40,7 +40,7 @@ public class Menu : MonoBehaviour {
 		if(OuyaSDK.OuyaInput.GetButton(0, OuyaController.BUTTON_O) == true) {
 			SoundManager.PlaySFX("Select");
 			Random.seed = (int)Time.time;
-			int levelToLoad = Random.Range(1, 3);
+			int levelToLoad = Random.Range(1, 4);
 			Application.LoadLevel(levelToLoad.ToString());
 		}
 		#endif
