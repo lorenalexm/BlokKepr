@@ -14,6 +14,7 @@ public class Blok : MonoBehaviour {
 
 	private Rigidbody2D body = null;
 	private GameObject[] scoreZones;
+	private bool paused = false;
 
 	#endregion
 
@@ -24,6 +25,26 @@ public class Blok : MonoBehaviour {
 	private void Start () {
 		this.body = this.GetComponent<Rigidbody2D>();
 		this.scoreZones = GameObject.FindGameObjectsWithTag("Score");
+	}
+
+	#endregion
+
+
+	//------------------------------------------------
+	#region OnEnable method
+
+	private void OnEnable() {
+		Messenger.AddListener("OnPause", this.Pause);
+	}
+
+	#endregion
+
+
+	//------------------------------------------------
+	#region OnDisable method
+
+	private void OnDisable() {
+		Messenger.RemoveListener("OnPause", this.Pause);
 	}
 
 	#endregion
@@ -48,5 +69,26 @@ public class Blok : MonoBehaviour {
 		}
 	}
 
+	#endregion
+
+
+	//------------------------------------------------
+	#region Pause method
+	
+	private void Pause() {
+		this.paused = !this.paused;
+		
+		if(this.body != null) {
+			switch(this.paused) {
+				case true:
+					this.body.isKinematic = true;
+					break;
+				case false:
+					this.body.isKinematic = false;
+					break;
+			}
+		}
+	}
+	
 	#endregion
 }

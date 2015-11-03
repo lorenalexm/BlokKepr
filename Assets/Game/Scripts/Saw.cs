@@ -29,6 +29,26 @@ public class Saw : MonoBehaviour {
 
 
 	//------------------------------------------------
+	#region OnEnable method
+
+	private void OnEnable() {
+		Messenger.AddListener("OnPause", this.Pause);
+	}
+
+	#endregion
+
+
+	//------------------------------------------------
+	#region OnDisable method
+
+	private void OnDisable() {
+		Messenger.RemoveListener("OnPause", this.Pause);
+	}
+
+	#endregion
+
+
+	//------------------------------------------------
 	#region OnDrawGizmos method
 
 	private void OnDrawGizmos() {
@@ -55,6 +75,16 @@ public class Saw : MonoBehaviour {
 			}
 			Messenger<GameObject>.Broadcast("OnPlayerDeath", col.gameObject);
 		}
+	}
+	
+	#endregion
+
+
+	//------------------------------------------------
+	#region Pause method
+	
+	private void Pause() {
+		this.DOKill();
 	}
 	
 	#endregion
